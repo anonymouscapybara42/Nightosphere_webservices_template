@@ -1,0 +1,68 @@
+---
+import Search from "@/components/Search.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
+import { menuLinks } from "@/site.config";
+import { siteConfig } from "../../site.config";
+---
+<header class="group relative mb-32 flex items-center pt-10 sm:ps-18" id="main-header">
+	<div class="flex sm:flex-col w-full">
+		
+		<div class="inline-block p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-xl">
+			
+			<a
+				aria-current={Astro.url.pathname === "/" ? "page" : false}
+				class="inline-flex items-center mb-4 sm:relative sm:inline-block"
+				href="/"
+			>
+			<span class="text-2xl font-bold sm:text-4xl text-white tracking-tight">
+    		{siteConfig.title} 
+			</span>
+			</a>
+
+			<nav
+				aria-label="Main menu"
+				class="bg-global-bg absolute -inset-x-4 top-12 hidden flex-col divide-y px-2 py-4 group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:flex sm:flex-row sm:divide-x-0 sm:bg-transparent sm:p-0"
+				id="navigation-menu"
+			>
+				{
+					menuLinks.map((link) => (
+						<a
+							aria-current={Astro.url.pathname === link.path ? "page" : false}
+							/* 4. Added px-3 and py-1 for individual link padding */
+							class="text-white/80 hover:text-white px-3 py-1 text-lg font-medium transition-colors sm:underline-offset-4 sm:hover:underline"
+							href={link.path}
+						>
+							{link.title}
+						</a>
+					))
+				}
+			</nav>
+		</div>
+	</div>
+
+	<div class="flex items-center gap-x-4 ms-auto">
+		<Search />
+		<ThemeToggle />
+	</div>
+</header>
+
+<script>
+	import { toggleClass } from "@/utils/domElement";
+
+	class MobileNavBtn extends HTMLElement {
+		#menuOpen: boolean = false;
+
+		connectedCallback() {
+			const headerEl = document.getElementById("main-header")!;
+			const mobileButtonEl = this.querySelector<HTMLButtonElement>("button");
+
+			mobileButtonEl?.addEventListener("click", () => {
+				if (headerEl) toggleClass(headerEl, "menu-open");
+				this.#menuOpen = !this.#menuOpen;
+				mobileButtonEl.setAttribute("aria-expanded", this.#menuOpen.toString());
+			});
+		}
+	}
+
+	customElements.define("mobile-button", MobileNavBtn);
+</script>
