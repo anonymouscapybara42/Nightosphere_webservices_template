@@ -84,6 +84,22 @@ const recentPosts = allPosts
 		</div>
 	</section>
 
+	<!-- ─── SLIDESHOW SECTION ─── -->
+	<section class="slideshow-section">
+		<div class="slideshow-container">
+			<div class="slideshow-wrapper">
+				<img src="/src/assets/1.jpg" class="slide-img" alt="Gallery 1" />
+				<img src="/src/assets/2.jpg" class="slide-img" alt="Gallery 2" />
+				<img src="/src/assets/3.jpg" class="slide-img" alt="Gallery 3" />
+				<img src="/src/assets/4.jpg" class="slide-img" alt="Gallery 4" />
+				<img src="/src/assets/5.jpg" class="slide-img" alt="Gallery 5" />
+				<img src="/src/assets/6.jpg" class="slide-img" alt="Gallery 6" />
+			</div>
+			<button class="slide-prev" onclick="moveSlide(-1)">&#10094;</button>
+			<button class="slide-next" onclick="moveSlide(1)">&#10095;</button>
+		</div>
+	</section>
+
 	<div class="content-wrapper">
 		<!-- Process / Services -->
 		<section class="work-section" id="work">
@@ -394,9 +410,9 @@ const recentPosts = allPosts
 
 /* ─── Content Wrapper ─── */
 .content-wrapper {
-    max-width: 1400px; /* Increased from 1280px for a bigger margin */
+    max-width: 1400px; /* Increased from 1280px per image_4c20c0.jpg */
     margin: 0 auto;
-    padding: 0 4rem;   /* Increased padding for larger side margins */
+    padding: 0 4rem;
     color: #f0f0f0;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -548,9 +564,9 @@ const recentPosts = allPosts
 .profile-img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Changed from cover to contain */
+    object-fit: contain; /* Changed to contain per image_4c20c0.jpg requirement */
     object-position: center;
-    background-color: #080c14; /* Added to blend with background */
+    background-color: #080c14;
     filter: grayscale(30%);
     transition: filter 0.5s ease;
 }
@@ -624,6 +640,58 @@ const recentPosts = allPosts
 	border-color: rgba(123, 94, 167, 0.5);
 	color: #fff;
 }
+
+/* ─── Slideshow Section ─── */
+.slideshow-section {
+	padding: 6rem 0;
+	background: #080c14;
+	border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.slideshow-container {
+	max-width: 1400px;
+	margin: 0 auto;
+	position: relative;
+	overflow: hidden;
+	border-radius: 30px;
+	aspect-ratio: 16 / 9;
+	box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.slideshow-wrapper {
+	display: flex;
+	transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+	height: 100%;
+}
+
+.slide-img {
+	min-width: 100%;
+	object-fit: cover;
+	height: 100%;
+}
+
+.slide-prev, .slide-next {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(255,255,255,0.1);
+	backdrop-filter: blur(5px);
+	color: white;
+	padding: 1.5rem;
+	border: 1px solid rgba(255,255,255,0.2);
+	cursor: pointer;
+	border-radius: 50%;
+	transition: all 0.3s ease;
+	z-index: 10;
+}
+
+.slide-prev:hover, .slide-next:hover {
+	background: #7b5ea7;
+	border-color: #fff;
+}
+
+.slide-prev { left: 2rem; }
+.slide-next { right: 2rem; }
 
 /* ─── Process / Work Section ─── */
 .work-section {
@@ -921,13 +989,13 @@ const recentPosts = allPosts
 }
 
 .footer-inner {
-    max-width: 1400px; /* Matches the content wrapper */
+    max-width: 1400px; /* Matches content wrapper */
     margin: 0 auto;
     padding: 5rem 2rem 4rem;
     display: grid;
-    /* This ensures columns have enough space */
+    /* Updated grid-template for better column spacing per image_4c20c0.jpg */
     grid-template-columns: 1.5fr 0.6fr 1fr 1.4fr; 
-    gap: 2rem;
+    gap: 3rem; 
     align-items: start;
 }
 
@@ -1050,16 +1118,7 @@ const recentPosts = allPosts
     font-size: 0.88rem;
     color: rgba(255,255,255,0.55);
     line-height: 1.6;
-    word-break: break-word; /* Prevents long emails/addresses from breaking the layout */
-}
-
-.footer-contact-list li {
-	display: flex;
-	gap: 0.75rem;
-	align-items: flex-start;
-	font-size: 0.88rem;
-	color: rgba(255,255,255,0.55);
-	line-height: 1.6;
+    word-break: break-word; /* Prevents overlap seen in image_4c20c0.jpg */
 }
 
 .footer-contact-icon {
@@ -1093,156 +1152,73 @@ const recentPosts = allPosts
 }
 </style>
 
-<script>
-(function () {
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-
-  let W = window.innerWidth;
-  let H = window.innerHeight;
-  let mouse = { x: W / 2, y: H / 2 };
-  let raf;
-
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+<!-- ─── JAVASCRIPT ─── -->
+<script is:inline>
+  // ── Slideshow Logic ──
+  let currentSlide = 0;
+  function moveSlide(direction) {
+    const wrapper = document.querySelector('.slideshow-wrapper');
+    const slides = document.querySelectorAll('.slide-img');
+    currentSlide = (currentSlide + direction + slides.length) % slides.length;
+    wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
   }
-  resize();
-  window.addEventListener('resize', resize);
+  
+  // Auto-play the slideshow
+  setInterval(() => moveSlide(1), 5000);
 
-  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-  window.addEventListener('touchmove', e => {
-    mouse.x = e.touches[0].clientX;
-    mouse.y = e.touches[0].clientY;
-  }, { passive: true });
+  // ── Canvas Background Logic ──
+  (function () {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
 
-  const CELL = 60;
-  const PARTICLE_COUNT = 90;
-  const particles = [];
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    let mouse = { x: W / 2, y: H / 2 };
 
-  class Particle {
-    constructor() { this.reset(true); }
-    reset(random) {
-      this.x = random ? Math.random() * W : Math.random() * W;
-      this.y = random ? Math.random() * H : H + 10;
-      this.vx = (Math.random() - 0.5) * 0.3;
-      this.vy = -(Math.random() * 0.4 + 0.1);
-      this.radius = Math.random() * 1.5 + 0.4;
-      this.alpha = Math.random() * 0.6 + 0.15;
-      this.life = 1;
-      this.decay = Math.random() * 0.002 + 0.0005;
-      const t = Math.random();
-      this.r = Math.round(123 + (255 - 123) * t);
-      this.g = Math.round(94  + (255 - 94)  * t);
-      this.b = Math.round(167 + (255 - 167) * t);
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
     }
-    update() {
-      const dx = mouse.x - this.x;
-      const dy = mouse.y - this.y;
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      if (dist < 200) {
-        this.vx += (dx / dist) * 0.012;
-        this.vy += (dy / dist) * 0.012;
+    resize();
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    const PARTICLE_COUNT = 90;
+    const particles = [];
+
+    class Particle {
+      constructor() { this.reset(true); }
+      reset(random) {
+        this.x = Math.random() * W;
+        this.y = random ? Math.random() * H : H + 10;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = -(Math.random() * 0.4 + 0.1);
+        this.radius = Math.random() * 1.5 + 0.4;
+        this.alpha = Math.random() * 0.6 + 0.15;
+        this.life = 1;
+        this.decay = Math.random() * 0.002 + 0.0005;
+        this.r = 123; this.g = 94; this.b = 167;
       }
-      this.vx *= 0.98;
-      this.vy *= 0.98;
-      this.x += this.vx;
-      this.y += this.vy;
-      this.life -= this.decay;
-      if (this.life <= 0 || this.y < -10) this.reset(false);
-    }
-    draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${this.r},${this.g},${this.b},${this.alpha * this.life})`;
-      ctx.fill();
-    }
-  }
-
-  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
-
-  const orbs = [
-    { ox: 0, oy: 0, lag: 0.06, size: 260, color: '123,94,167', alpha: 0.13 },
-    { ox: 0, oy: 0, lag: 0.03, size: 160, color: '180,140,220', alpha: 0.09 },
-  ];
-
-  const MAX_LINK_DIST = 110;
-
-  function drawGrid() {
-    const mx = mouse.x, my = mouse.y;
-    const rippleR = 180;
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x <= W; x += CELL) {
-      for (let y = 0; y <= H; y += CELL) {
-        const dx = x - mx, dy = y - my;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const proximity = Math.max(0, 1 - dist / rippleR);
-        const alpha = 0.04 + proximity * 0.18;
-        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-        const s = 3 + proximity * 6;
+      update() {
+        this.x += this.vx; this.y += this.vy;
+        this.life -= this.decay;
+        if (this.life <= 0 || this.y < -10) this.reset(false);
+      }
+      draw() {
         ctx.beginPath();
-        ctx.moveTo(x - s, y); ctx.lineTo(x + s, y);
-        ctx.moveTo(x, y - s); ctx.lineTo(x, y + s);
-        ctx.stroke();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.r},${this.g},${this.b},${this.alpha * this.life})`;
+        ctx.fill();
       }
     }
-    for (let x = 0; x <= W; x += CELL) {
-      const dx = x - mx;
-      const lineAlpha = 0.03 + Math.max(0, 1 - Math.abs(dx) / 300) * 0.05;
-      ctx.strokeStyle = `rgba(255,255,255,${lineAlpha})`;
-      ctx.lineWidth = 0.4;
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = 0; y <= H; y += CELL) {
-      const dy = y - my;
-      const lineAlpha = 0.03 + Math.max(0, 1 - Math.abs(dy) / 300) * 0.05;
-      ctx.strokeStyle = `rgba(255,255,255,${lineAlpha})`;
-      ctx.lineWidth = 0.4;
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-  }
 
-  function tick() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#080c14';
-    ctx.fillRect(0, 0, W, H);
-    drawGrid();
-    orbs.forEach(orb => {
-      orb.ox += (mouse.x - orb.ox) * orb.lag;
-      orb.oy += (mouse.y - orb.oy) * orb.lag;
-      const grad = ctx.createRadialGradient(orb.ox, orb.oy, 0, orb.ox, orb.oy, orb.size);
-      grad.addColorStop(0,   `rgba(${orb.color},${orb.alpha})`);
-      grad.addColorStop(0.5, `rgba(${orb.color},${orb.alpha * 0.4})`);
-      grad.addColorStop(1,   `rgba(${orb.color},0)`);
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(orb.ox, orb.oy, orb.size, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < MAX_LINK_DIST) {
-          const a = (1 - d / MAX_LINK_DIST) * 0.18 * particles[i].life * particles[j].life;
-          ctx.strokeStyle = `rgba(180,160,220,${a})`;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-    particles.forEach(p => { p.update(); p.draw(); });
-    ctx.beginPath();
-    ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(200,180,240,0.7)';
-    ctx.fill();
-    raf = requestAnimationFrame(tick);
-  }
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
 
-  tick();
-})();
+    function tick() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
 </script>
